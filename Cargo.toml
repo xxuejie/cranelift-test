@@ -1,0 +1,12 @@
+[package]
+name = "cranelift-test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cranelift-codegen = "0.96.2"
+cranelift-frontend = "0.96.2"
+cranelift-module = "0.96.2"
+cranelift-object = "0.96.2"

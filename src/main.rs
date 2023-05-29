@@ -1,5 +1,5 @@
 use cranelift_codegen::{
-    ir::{types::I64, AbiParam, InstBuilder, Signature},
+    ir::{types::{I64, I64X8}, AbiParam, InstBuilder, Signature},
     isa::{lookup_by_name, CallConv},
     settings,
     verifier::verify_function,
@@ -23,12 +23,16 @@ fn main() {
 
     let mut sig = Signature::new(CallConv::Fast);
 
-    let arg_num = 8;
-
-    for _ in 0..arg_num {
-        sig.params.push(AbiParam::new(I64));
-        sig.returns.push(AbiParam::new(I64));
-    }
+    sig.params.push(AbiParam::new(I64));
+    sig.params.push(AbiParam::new(I64));
+    sig.params.push(AbiParam::new(I64));
+    sig.params.push(AbiParam::new(I64X8));
+    sig.params.push(AbiParam::new(I64X8));
+    sig.returns.push(AbiParam::new(I64));
+    sig.returns.push(AbiParam::new(I64));
+    sig.returns.push(AbiParam::new(I64));
+    sig.returns.push(AbiParam::new(I64X8));
+    sig.returns.push(AbiParam::new(I64X8));
 
     let mut module_context = object_module.make_context();
     module_context.func.signature = sig;
@@ -41,9 +45,15 @@ fn main() {
     builder.switch_to_block(block0);
     builder.seal_block(block0);
 
-    let mut params = builder.block_params(block0).to_vec();
-    params.reverse();
-    builder.ins().return_(&params);
+    let params = builder.block_params(block0).to_vec();
+    let results = vec![
+        params[0],
+        params[1],
+        params[2],
+        params[3],
+        params[4],
+    ];
+    builder.ins().return_(&results);
 
     let res = verify_function(&module_context.func, &flags);
     println!("{}", module_context.func.display());
